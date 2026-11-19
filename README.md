@@ -1,5 +1,5 @@
 ### Run Instructions
-- Download `rastrigin.py` and `requirements.txt`
+- Download the repository
 - In terminal, run `pip install -r requirements.txt`
 - Then to run, `python rastrigin.py`
 
@@ -7,12 +7,10 @@
 # Rastrigin Function Optimiser
 
 The Rastrigin function is a function widely used to benchmark optimisation algorithms, due to its highly multimodal nature. At a point in $n$-dimensional space given by $x=(x_1, x_2, ... x_n)$, 
-
 $$
 f(x) = An + \sum_{i=1}^{n} \left[ x_i^2 - A \cos(2\pi x_i) \right]
 $$
-
-![Rastrigin Function](rastrigin.png)
+![[Pasted image 20261119130709.png|329]]
 
 Its minimum value is at $f((0, 0, ..., 0)) = 0$, but it is filled with surrounding valleys that have almost equally small minima, each very hard to distinguish from the global minimum. This problem is only exacerbated as $n$, the number of dimensions, increases - with a larger $n$, there are more directions to step in, and exponentially more local minima to end up trapped in.
 
@@ -29,13 +27,7 @@ Simulated annealing works the same way. The algorithm starts with a high 'temper
 
 In my implementation, the chance that a move (where $T$ = temperature and $\Delta E$ = the change in the objective function) is accepted is given by:
 
-$$
-P(\text{accept}) =
-\begin{cases}
-1 & \Delta E < 0 \\
-e^{-\Delta E/T} & \Delta E \geq 0
-\end{cases}
-$$
+$P(\text{accept}) = \begin{cases} 1 & \Delta E < 0\\ e^{-\Delta E/T} & \Delta E \geq 0 \end{cases}$
 
 If $\Delta E$ < 0: The move improves the function - accept it always
 If $\Delta E \ge 0$: The move does not improve the function - accept it with $P(\text{accept}) = e^{-\Delta E/T}$
@@ -68,27 +60,27 @@ I experimented with many different approaches and parameters for this problem, b
 - I initially only planned to implement SA until I found that the algorithm was returning points inside the global minimum valley, but struggling to reach the exact optimum due to the imprecise method of taking $\text{0 to }\delta$-sized steps. I first attempted to implement a dynamic $\delta$ that was reduced once a certain low acceptance rate was achieved, but this approach was ineffective - it ended up behaving too greedily, trapping itself in the local minima.
 - The SA halting condition was originally implemented as a minimum threshold temperature, however I found the minimum acceptance rate to be a more effective proxy than an arbitrary constant.
 - My implementation needs surprisingly slow cooling to be effective. It seems that a typical geometric cooling schedule might use a coefficient like 0.997, and this is what I initially tried but to not much avail. I found that a value like 0.99999 was far more effective for my algorithm, at the cost of a slower runtime.
-- This optimisation problem becomes exponentially harder as $n$ (dimensions) increases. I first implemented it in 2D, and scaled it up to 3- and 4-dimensional runs, which were broadly successful. Each added dimension presents its own issues - one I found particularly trying was that as $n$ increases for a fixed $\delta$, the effective 'size' of that step in each dimension is reduced. This may seem unintuitive, but it becomes obvious when you realise that the same $\delta$ is distributed over more dimensions of travel, so there is a smaller step in each dimension. Because of this, the parameters had to be tuned individually for each $n$. I did find a set of values which was successful in optimising the 5-dimensional function, but the runtime was too long to generate any meaningful data - this seems to be the limit of my algorithm. Thus, my data is gathered from runs where $n \le 4$.
+- This optimisation problem becomes exponentially harder as $n$ (dimensions) increases. I first implemented it in 2D, and scaled it up to 3- and 4-dimensional runs, which were broadly successful. Each added dimension presents its own issues - one I found particularly trying was that as $n$ increases for a fixed $\delta$, the effective 'size' of that step in each dimension is reduced. This may seem unintuitive, but it becomes obvious when you realise that the same $\delta$ is distributed over more dimensions of travel, so there is a smaller step in each dimension. Because of this, the parameters had to be tuned individually for each $n$. I did find a set of values which was successful in optimising the 6-dimensional function, but the runtime was too long to generate any meaningful data - this seems to be the limit of my algorithm. Thus, my data is gathered from runs where $n \le 5$.
 
 ---
 ## Findings
 
-Running with $n$ = 2, 3, and 4, we see:
+Running with $n$ = 2, 3, and 4, and 5 we see:
 
-| Dimensions | SA Average Iterations | SA Average Runtime (s) | GD Average Iterations | GD Average Runtime (s) | Average f(x) | Success rate (%) |
-| ---------- | --------------------- | ---------------------- | --------------------- | ---------------------- | ------------ | ---------------- |
-| 2          | 693,140               | 6                      | 18                    | 0.000                  | 0.199        | 98               |
-| 3          | 612,440               | 8                      | 19                    | 0.000                  | 0.000        | 100              |
-| 4          | 571,260               | 7                      | 19                    | 0.000                  | 0.438        | 57               |
-
-We can see that this algorithm is effective - it usually succeeds in finding the global minimum, especially in the lower dimensions. The most obvious conclusion is that the success rate is heavily dependent on $n$. We can see that it is approximately 100% for 2- and 3-dimensional runs, but drops to 57% once $n=4$. The runtimes and iteration figures remain relatively constant between dimensions, as the cooling schedule is constant across all of them.
+| **Dimensions** | **SA Average Iterations** | **SA Average Runtime (s)** | **GD Average Iterations** | **GD Average Runtime (s)** | **Average f(x)** | **Success rate (%)** |
+| -------------- | ------------------------- | -------------------------- | ------------------------- | -------------------------- | ---------------- | -------------------- |
+| 2              | 705,900                   | 8                          | 18                        | 0.000                      | 0.000            | 100                  |
+| 3              | 622,020                   | 8                          | 19                        | 0.000                      | 0.000            | 100                  |
+| 4              | 579,820                   | 7                          | 20                        | 0.000                      | 0.537            | 46                   |
+| 5              | 549,180                   | 8                          | 20                        | 0.001                      | 1.313            | 12                   |
+We can see that this algorithm is effective - it does succeed in finding the global minimum, especially in the lower dimensions. The most obvious conclusion is that the success rate is heavily dependent on $n$. We can see that it is approximately 100% for 2- and 3-dimensional runs, but drops to 46% once $n=4$, and even to 12% at $n=5$. This is expected, as the difficulty of the problem does scale with $n$. The runtimes and iteration figures remain relatively constant between dimensions, as the cooling schedule is constant across all of them. 
 
 ---
 ## Limitations and Future Improvements
 
 #### Limitations:
 - The geometric cooling schedule I used does not guarantee convergence to the global optimum - only a sufficiently slow logarithmic cooling schedule can guarantee convergence under some assumptions. Because of this, my algorithm could never be made to be 100% accurate for an arbitrary value $n$. 
-- Parameter tuning is required for changes in $n$ - due to the effects mentioned above, $\delta$ should be modified dependent on $n$ to preserve the same absolute change in each dimension per step. This could be an explanation for why the 2D run had a slightly *lower* success rate than the 3D one.
+- Parameter tuning is required for changes in $n$ - due to the effects mentioned above, $\delta$ should be modified dependent on $n$ to preserve the same absolute change in each dimension per step. This would possibly make the higher dimensional runs more successful.
 #### Future Improvements:
 - Adaptive step sizes - having $\delta$ adapt to the current state would improve the precision of the algorithm, and possibly eliminate the need for GD altogether.
 - Alternate cooling schedules - implementing multiple cooling schedules at the same time, and running tests to compare them across an equal number of iterations.
