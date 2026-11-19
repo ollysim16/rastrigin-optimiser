@@ -7,10 +7,12 @@
 # Rastrigin Function Optimiser
 
 The Rastrigin function is a function widely used to benchmark optimisation algorithms, due to its highly multimodal nature. At a point in $n$-dimensional space given by $x=(x_1, x_2, ... x_n)$, 
+
 $$
 f(x) = An + \sum_{i=1}^{n} \left[ x_i^2 - A \cos(2\pi x_i) \right]
 $$
-![[Pasted image 20261119130709.png|329]]
+
+![Rastrigin Function](rastrigin.png)
 
 Its minimum value is at $f((0, 0, ..., 0)) = 0$, but it is filled with surrounding valleys that have almost equally small minima, each very hard to distinguish from the global minimum. This problem is only exacerbated as $n$, the number of dimensions, increases - with a larger $n$, there are more directions to step in, and exponentially more local minima to end up trapped in.
 
@@ -27,7 +29,8 @@ Simulated annealing works the same way. The algorithm starts with a high 'temper
 
 In my implementation, the chance that a move (where $T$ = temperature and $\Delta E$ = the change in the objective function) is accepted is given by:
 
-$P(\text{accept}) = \begin{cases} 1 & \Delta E < 0\\ e^{-\Delta E/T} & \Delta E \geq 0 \end{cases}$
+$$P(\text{accept}) = \begin{cases} 1 & \Delta E < 0\\
+e^{-\Delta E/T} & \Delta E \geq 0 \end{cases}$$
 
 If $\Delta E$ < 0: The move improves the function - accept it always
 If $\Delta E \ge 0$: The move does not improve the function - accept it with $P(\text{accept}) = e^{-\Delta E/T}$
@@ -73,6 +76,7 @@ Running with $n$ = 2, 3, and 4, and 5 we see:
 | 3              | 622,020                   | 8                          | 19                        | 0.000                      | 0.000            | 100                  |
 | 4              | 579,820                   | 7                          | 20                        | 0.000                      | 0.537            | 46                   |
 | 5              | 549,180                   | 8                          | 20                        | 0.001                      | 1.313            | 12                   |
+
 We can see that this algorithm is effective - it does succeed in finding the global minimum, especially in the lower dimensions. The most obvious conclusion is that the success rate is heavily dependent on $n$. We can see that it is approximately 100% for 2- and 3-dimensional runs, but drops to 46% once $n=4$, and even to 12% at $n=5$. This is expected, as the difficulty of the problem does scale with $n$. The runtimes and iteration figures remain relatively constant between dimensions, as the cooling schedule is constant across all of them. 
 
 ---
