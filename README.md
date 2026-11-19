@@ -68,7 +68,7 @@ I experimented with many different approaches and parameters for this problem, b
 ---
 ## Findings
 
-Running with $n$ = 2, 3, and 4, and 5 we see:
+Running with $n$ = 2, 3, 4, and 5 we see:
 
 | **Dimensions** | **SA Average Iterations** | **SA Average Runtime (s)** | **GD Average Iterations** | **GD Average Runtime (s)** | **Average f(x)** | **Success rate (%)** |
 | -------------- | ------------------------- | -------------------------- | ------------------------- | -------------------------- | ---------------- | -------------------- |
