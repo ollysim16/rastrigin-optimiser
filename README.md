@@ -7,9 +7,11 @@
 # Rastrigin Function Optimiser
 
 The Rastrigin function is a function widely used to benchmark optimisation algorithms, due to its highly multimodal nature. At a point in $n$-dimensional space given by $x=(x_1, x_2, ... x_n)$, 
+
 $$
 f(x) = An + \sum_{i=1}^{n} \left[ x_i^2 - A \cos(2\pi x_i) \right]
 $$
+
 ![Rastrigin Function](rastrigin.png)
 
 Its minimum value is at $f((0, 0, ..., 0)) = 0$, but it is filled with surrounding valleys that have almost equally small minima, each very hard to distinguish from the global minimum. This problem is only exacerbated as $n$, the number of dimensions, increases - with a larger $n$, there are more directions to step in, and exponentially more local minima to end up trapped in.
@@ -27,7 +29,13 @@ Simulated annealing works the same way. The algorithm starts with a high 'temper
 
 In my implementation, the chance that a move (where $T$ = temperature and $\Delta E$ = the change in the objective function) is accepted is given by:
 
-$P(\text{accept}) = \begin{cases} 1 & \Delta E < 0\\ e^{-\Delta E/T} & \Delta E \geq 0 \end{cases}$
+$$
+P(\text{accept}) =
+\begin{cases}
+1 & \Delta E < 0 \\
+e^{-\Delta E/T} & \Delta E \geq 0
+\end{cases}
+$$
 
 If $\Delta E$ < 0: The move improves the function - accept it always
 If $\Delta E \ge 0$: The move does not improve the function - accept it with $P(\text{accept}) = e^{-\Delta E/T}$
